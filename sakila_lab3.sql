@@ -8,15 +8,17 @@ SELECT MAX(length) AS max_duration, MIN(length) AS min_duration
 FROM sakila.film;
 
 -- 1.2. Express the average movie duration in hours and minutes. Don't use decimals. Hint: Look for floor and round functions.
-SELECT FLOOR(AVG(length)/60) AS hours, FLOOR(AVG(length)-60) AS minutes
+SELECT FLOOR(AVG(length)/60) AS hours, FLOOR(AVG(length) % 60) AS minutes
 FROM sakila.film;
 
 -- 2. You need to gain insights related to rental dates:
 SELECT * FROM sakila.rental;
 
 -- 2.1 Calculate the number of days that the company has been operating. Hint: To do this, use the rental table, and the DATEDIFF() function to subtract the earliest date in the rental_date column from the latest date.
-SELECT DATEDIFF(MAX(CONVERT(rental_date, DATE)), MIN(CONVERT(rental_date, DATE))) AS operation_days FROM sakila.rental; -- Option 1
-SELECT DATEDIFF(MAX(CAST(rental_date AS DATE)), MIN(CAST(rental_date AS DATE))) AS operation_days FROM sakila.rental; -- Option 2
+SELECT DATEDIFF(MAX(CONVERT(rental_date, DATE)), MIN(CONVERT(rental_date, DATE))) AS operation_days 
+FROM sakila.rental; -- Option 1
+SELECT DATEDIFF(MAX(CAST(rental_date AS DATE)), MIN(CAST(rental_date AS DATE))) AS operation_days 
+FROM sakila.rental; -- Option 2
 
 -- 2.2 Retrieve rental information and add two additional columns to show the month and weekday of the rental. Return 20 rows of results.
 SELECT *, MONTHNAME(rental_date) AS rental_month, WEEKDAY(rental_date) AS rental_weekday
@@ -27,8 +29,9 @@ LIMIT 20;
 SELECT *, 
 	MONTHNAME(rental_date) AS rental_month, 
 	WEEKDAY(rental_date) AS rental_weekday,
+    DAYNAME(rental_date) AS rental_dayname,
 CASE
-	WHEN WEEKDAY(rental_date) < 6 THEN 'Workday'
+	WHEN WEEKDAY(rental_date) <= 4 THEN 'Workday'
 	ELSE 'Weekend'
 	END AS weekday
 FROM sakila.rental;
